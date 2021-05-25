@@ -1,0 +1,18 @@
+{
+    "configurations": [
+        {
+            "browse": {
+                "databaseFilename": "",
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "includePath": [
+                "/opt/ros/noetic/include/**",
+                "/usr/include/**",
+                "/usr/include/ignition/transport8",
+                "/opt/ros/noetic/include"
+            ],
+            "name": "ROS"
+        }
+    ],
+    "version": 4
+}
