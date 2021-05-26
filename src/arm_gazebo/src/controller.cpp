@@ -15,19 +15,57 @@ namespace gazebo
         printf("Hello World!\n");
     }
 
+    private: void updateJointAnglesCallback(const arm_gazebo::ModelJoints& msg)
+    {
+        ROS_INFO("Received angle");
+
+        std::string name1 = this->joint1->GetScopedName();
+
+        this->jointController->SetPositionPID(name1, this->pidJoint1);
+        this->jointController->SetPositionTarget(name1, getRad(msg.jointOneAngle));
+
+        std::string name2 = this->joint2->GetScopedName();
+
+        this->jointController->SetPositionPID(name2, this->pidJoint2);
+        this->jointController->SetPositionTarget(name2, getRad(msg.jointTwoAngle));
+
+        std::string name3 = this->joint3->GetScopedName();
+
+        this->jointController->SetPositionPID(name3, this->pidJoint3);
+        this->jointController->SetPositionTarget(name3, getRad(msg.jointThreeAngle));
+
+        std::string name4 = this->joint4->GetScopedName();
+
+        this->jointController->SetPositionPID(name4, this->pidJoint4);
+        this->jointController->SetPositionTarget(name4, getRad(msg.jointFourAngle));
+    }
+
+    private: static float getRad(float angleDegree) {
+        float rad = M_PI * angleDegree/180 ;
+        return rad;
+    }
+
+    private: static float getDegree(float angleRad) {
+        float degree = (angleRad * 180)/M_PI ;
+        return degree;
+    }
+
     public: void Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/)
     {
         this->model = _parent;
 
         this->jointController = this->model->GetJointController();
 
-        this->pidJoint1 = common::PID(10, 5.01, 5.03);
+        float angleDegree = 50; 
+        float rad = M_PI * angleDegree/180 ;
 
-        this->pidJoint2 = common::PID(15, 10.1, 10);
+        this->pidJoint1 = common::PID(15, 8.01, 5.03);
 
-        this->pidJoint3 = common::PID(15, 10.1, 10);
+        this->pidJoint2 = common::PID(20, 12.1, 15);
 
-        this->pidJoint4 = common::PID(15, 10.1, 10);
+        this->pidJoint3 = common::PID(20, 13.1, 15);
+
+        this->pidJoint4 = common::PID(15, 8.1, 10);
 
         auto joint_name1 = "base_arm1";
         auto joint_name2 = "arm1_arm2";
@@ -39,7 +77,28 @@ namespace gazebo
         this->joint3 = this->model->GetJoint(joint_name3);
         this->joint4 = this->model->GetJoint(joint_name4);
 
+        std::string name1 = this->joint1->GetScopedName();
+
+        this->jointController->SetPositionPID(name1, pidJoint1);
+        this->jointController->SetPositionTarget(name1, 0.01);
+
+        std::string name2 = this->joint2->GetScopedName();
+
+        this->jointController->SetPositionPID(name2, pidJoint2);
+        this->jointController->SetPositionTarget(name2, 0.35);
+
+        std::string name3 = this->joint3->GetScopedName();
+
+        this->jointController->SetPositionPID(name3, pidJoint3);
+        this->jointController->SetPositionTarget(name3, -rad);
+
+        std::string name4 = this->joint4->GetScopedName();
+
+        this->jointController->SetPositionPID(name4, pidJoint4);
+        this->jointController->SetPositionTarget(name4, rad);
+
         this->jointPublisher = this->nodeHandle.advertise<arm_gazebo::ModelJoints>("modelJoints", 10);
+        this->jointSubscriber = this->nodeHandle.subscribe("updateJointAngles", 1000, &Controller1::updateJointAnglesCallback, this);
 
         this->updateConnection = event::Events::ConnectWorldUpdateBegin(
             std::bind(&Controller1::OnUpdate, this)
@@ -50,10 +109,10 @@ namespace gazebo
     {
         arm_gazebo::ModelJoints msg;
 
-        msg.jointOneAngle = this->joint1->Position();
-        msg.jointTwoAngle = this->joint2->Position();
-        msg.jointThreeAngle = this->joint3->Position();
-        msg.jointFourAngle = this->joint4->Position();
+        msg.jointOneAngle = getDegree(this->joint1->Position());
+        msg.jointTwoAngle = getDegree(this->joint2->Position());
+        msg.jointThreeAngle = getDegree(this->joint3->Position());
+        msg.jointFourAngle = getDegree(this->joint4->Position());
 
         this->jointPublisher.publish(msg);
 
@@ -81,6 +140,7 @@ namespace gazebo
 
     private: ros::NodeHandle nodeHandle;
     private: ros::Publisher jointPublisher;
+    private: ros::Subscriber jointSubscriber;
   };
   GZ_REGISTER_MODEL_PLUGIN(Controller1)
 }
