@@ -78,11 +78,13 @@ add_dependencies(${PROJECT_NAME} arm_gazebo_generate_messages_cpp)
 add_message_files(
   DIRECTORY msg FILES ModelJoints.msg
   DIRECTORY msg FILES UpdateGripper.msg
+  DIRECTORY msg FILES pos.msg
 )
 
 ## Generate services in the 'srv' folder
 add_service_files(
   DIRECTORY srv FILES fk.srv
+  DIRECTORY srv FILES ik.srv
 )
 
 ## Generate actions in the 'action' folder
@@ -186,7 +188,7 @@ DEPENDS roscpp gazebo_ros arm_lib message_runtime
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
-  scripts/fk.py
+  scripts/fk.py scripts/ik.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
