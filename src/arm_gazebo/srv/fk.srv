@@ -1,0 +1,18 @@
+float64 link1_length
+float64 link2_length
+float64 link3_length
+float64 link4_length
+float64 link5_length
+float64 link6_length
+float64 link7_length
+
+float64 joint1_angle
+float64 joint2_angle
+float64 joint3_angle
+float64 joint4_angle
+float64 joint5_angle
+float64 joint6_angle
+---
+float64 x
+float64 y
+float64 z
