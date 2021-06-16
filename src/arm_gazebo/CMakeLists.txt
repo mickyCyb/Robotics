@@ -28,7 +28,9 @@ include_directories(${Boost_INCLUDE_DIR}
               ${std_msgs_INCLUDE_DIRS})
 
 add_library(${PROJECT_NAME} SHARED src/controller.cpp) #src/model_rotate.cpp
+add_library(controller SHARED src/modelController.cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES} ${roscpp_LIBRARIES})
+target_link_libraries(controller ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES} ${roscpp_LIBRARIES})
 
 ## Build talker and listener
 
@@ -73,16 +75,15 @@ add_dependencies(${PROJECT_NAME} arm_gazebo_generate_messages_cpp)
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-add_message_files(DIRECTORY msg FILES ModelJoints.msg
-  # Message2.msg
+add_message_files(
+  DIRECTORY msg FILES ModelJoints.msg
+  DIRECTORY msg FILES UpdateGripper.msg
 )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+add_service_files(
+  DIRECTORY srv FILES fk.srv
+)
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -184,10 +185,10 @@ DEPENDS roscpp gazebo_ros arm_lib message_runtime
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
-# catkin_install_python(PROGRAMS
-#   scripts/my_python_script
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+catkin_install_python(PROGRAMS
+  scripts/fk.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html

@@ -469,5 +469,6 @@
         </joint>
 
         <plugin name="arm_gazebo" filename="libarm_gazebo.so"/>
+        <plugin name="controller" filename="libcontroller.so"/>
     </model>
 </sdf>
